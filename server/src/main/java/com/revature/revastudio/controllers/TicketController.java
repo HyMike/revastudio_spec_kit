@@ -8,6 +8,7 @@ import com.revature.revastudio.services.TicketService;
 import com.revature.revastudio.util.RetrieveCustomer;
 import com.revature.revastudio.util.RetrieveUser;
 import lombok.Getter;
+import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -40,18 +41,23 @@ public class TicketController {
 
 
     @PreAuthorize("hasRole('CUSTOMER')")
-    @GetMapping("tickets")
-    public ResponseEntity<List<TicketResponseDTO>> getAllTickets() {
+    @GetMapping("customer")
+    public ResponseEntity<List<TicketResponseDTO>> getCustomerTickets() {
         UUID userId  = retrieveUser.getUser();
         List<TicketResponseDTO> allTickets = this.ticketService.getTicketsByCustomer(userId);
+        return ResponseEntity.ok(allTickets);
+    }
+
+    @PreAuthorize("hasRole('EMPLOYEE')")
+    @GetMapping("employee")
+    public ResponseEntity<List<TicketResponseDTO>> getEmployeeTickets() {
+        UUID userId = retrieveUser.getUser();
+        List<TicketResponseDTO> allTickets = this.ticketService.getTicketsByEmployee(userId);
+        return ResponseEntity.ok(allTickets);
+        //implement tickets for employee too.
 
 
     }
-
-    //implement tickets for employee too. 
-
-
-
 }
 
 

@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { TicketResponse } from '../interfaces/ticket';
 import { Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
+import { AuthService } from './auth-service';
 
 
 const API_BASE_URL = "http://localhost:8080/api";
@@ -11,10 +12,17 @@ const API_BASE_URL = "http://localhost:8080/api";
 })
 export class TicketService {
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private authService: AuthService
+  ) {}
 
   getAllTickets(): Observable<TicketResponse[]> {
-    return this.http.get<TicketResponse[]>(`${API_BASE_URL}/ticket/tickets`);
+    if (this.authService.getRole() == "CUSTOMER"){
+      return this.http.get<TicketResponse[]>(`${API_BASE_URL}/ticket/customer`);
+    } else {
+      return this.http.get<TicketResponse[]>(`${API_BASE_URL}/ticket/employee`);
+    }
   }
   
 }

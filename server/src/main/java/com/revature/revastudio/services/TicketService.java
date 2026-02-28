@@ -31,7 +31,18 @@ public class TicketService {
     public List<TicketResponseDTO> getTicketsByCustomer(UUID userId) {
 
         List<Ticket> tickets = this.ticketRepository.findByCustomer_User_Id(userId);
-        tickets.stream().map(this::toTicketResponseDTO).toList();
+        List<TicketResponseDTO> ticketDTO = tickets.stream().map(this::toTicketResponseDTO).toList();
+        return ticketDTO;
+    }
+
+
+    public List<TicketResponseDTO> getTicketsByEmployee(UUID userId) {
+
+        List<Ticket> tickets = this.ticketRepository.findByEmployee_User_Id(userId);
+        List<TicketResponseDTO> ticketDTO = tickets.stream()
+        .map(this::toTicketResponseDTO)
+        .toList();
+        return ticketDTO;
 
     }
 
