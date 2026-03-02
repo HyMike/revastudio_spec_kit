@@ -30,4 +30,10 @@ public class TicketThread {
     //createdAt
     private LocalDateTime createdAt;
 
+    @PrePersist
+    public void onCreate() {
+        this.createdAt = LocalDateTime.now();
+    }
+
+
 }
