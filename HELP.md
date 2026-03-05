@@ -24,3 +24,29 @@ These additional references should also help you:
 
 * [Gradle Build Scans – insights for your project's build](https://scans.gradle.com#gradle)
 
+## Local setup notes
+This project expects runtime configuration via environment variables. See `CONTRIBUTING.md` for details. Important variables:
+
+- `JWT_SECRET` — JWT signing secret
+- `DATABASE_URL` — JDBC URL for PostgreSQL (e.g. `jdbc:postgresql://localhost:5432/revastudio`)
+- `SPRING_DATASOURCE_USERNAME`
+- `SPRING_DATASOURCE_PASSWORD`
+
+Quick commands:
+
+```bash
+# Start backend
+cd server && ./gradlew bootRun
+
+# Start frontend
+cd client && npm install && npm start
+
+# Run server tests
+cd server && ./gradlew test
+
+# Run client tests
+cd client && npm run test
+```
+
+See `CONTRIBUTING.md` for full contribution and PR guidance.
+
