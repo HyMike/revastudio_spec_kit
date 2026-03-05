@@ -16,7 +16,11 @@ export class TicketThreadService {
     return this.http.get<TicketThreadInterface[]>(`${API_BASE_URL}/ticket-threads/${ticketId}`);
   }
 
-
-
-
+  createThreadMessage(ticketId: number, threadMessage: string): Observable<TicketThreadInterface> {
+    return this.http.post<TicketThreadInterface>(`${API_BASE_URL}/ticket-threads/create`, {
+      ticketId,
+      thread: threadMessage
+    });
+  } 
 }
+

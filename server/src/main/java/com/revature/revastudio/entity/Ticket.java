@@ -37,8 +37,8 @@ public class Ticket {
     @JoinColumn(name="customer_id", nullable = false)
     private Customer customer;
 
-    @ManyToOne
-    @JoinColumn(name="employee_id", nullable = false)
+    @ManyToOne(optional = true)
+    @JoinColumn(name="employee_id", nullable = true)
     private Employee employee;
 
     @OneToMany(mappedBy = "ticket")

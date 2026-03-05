@@ -3,5 +3,9 @@ export interface TicketThreadInterface {
     ticketId: number, 
     thread: string,
     createdAt: string
+}
 
+export interface CreateThreadMessageInterface {
+    ticketId: number, 
+    thread: string
 }

@@ -8,6 +8,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class TicketThreadRequestDTO {
+    public Integer ticketId;
     public String thread;
-
 }
