@@ -15,7 +15,8 @@ import { TicketThreadModal } from '../ticket-thread-modal/ticket-thread-modal';
 })
 export class Ticket implements OnInit {
 
-  allTickets!: Observable<TicketResponse[]>; 
+  allTickets!: Observable<TicketResponse[]>;
+  loadError: boolean = false;
 
   constructor(
     private ticketService: TicketService,
@@ -23,26 +24,25 @@ export class Ticket implements OnInit {
   ) {};
 
   ngOnInit(): void {
+    this.loadTickets();
+  }
+
+  loadTickets(): void {
+    this.loadError = false;
     this.allTickets = this.ticketService.getAllTickets();
   }
 
-  openThread(ticketId: number) {
-    this.dialog.open(TicketThreadModal, {
-      data: { ticketId },
+  openThread(ticket: TicketResponse) {
+    const ref = this.dialog.open(TicketThreadModal, {
+      data: { ticketId: ticket.ticketId, ticketStatus: ticket.status, ticketSubject: ticket.subject },
       width: '500px'
     });
-
+    ref.afterClosed().subscribe(result => {
+      if (result?.closed) {
+        this.loadTickets();
+      }
+    });
   }
-
-
-// get all the tickets to display 
-// then create a button that allows you to view the tickets in a different page.  
-
-// create a ticket service that calls the backend to retrieve all the tickets
-// then you can take the observable and loop thru that. 
-
-
-
 
 
 }

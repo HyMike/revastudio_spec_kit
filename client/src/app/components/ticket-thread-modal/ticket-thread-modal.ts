@@ -4,6 +4,9 @@ import { Inject } from '@angular/core';
 import { BehaviorSubject, delay, map, Observable, shareReplay } from 'rxjs';
 import { TicketThreadInterface } from '../../interfaces/ticket-thread-interface';
 import { TicketThreadService } from '../../services/ticket-thread-service';
+import { AuthService } from '../../services/auth-service';
+import { TicketService } from '../../services/ticket-service';
+import { TicketStatus } from '../../interfaces/ticket';
 import { AsyncPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -15,22 +18,32 @@ import { FormsModule } from '@angular/forms';
 })
 export class TicketThreadModal implements OnInit {
 
+  isEmployee: boolean = false;
+  errorMessage: string = '';
+
   constructor(
-    @Inject(MAT_DIALOG_DATA) public data: {ticketId: number},
-  private dialogRef: MatDialogRef<TicketThreadModal>,
-  private ticketThreads: TicketThreadService,
-  private cdr: ChangeDetectorRef
+    @Inject(MAT_DIALOG_DATA) public data: {ticketId: number, ticketStatus: TicketStatus, ticketSubject: string},
+    private dialogRef: MatDialogRef<TicketThreadModal>,
+    private ticketThreads: TicketThreadService,
+    private authService: AuthService,
+    private ticketService: TicketService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ticketThreadMessages$!: Observable<TicketThreadInterface[]>;
   newThreadMessage: string = '';
 
   ngOnInit(): void {
+      this.isEmployee = this.authService.getRole() === 'EMPLOYEE';
       this.ticketThreadMessages$ = this.ticketThreads.getAllThreadMessages(this.data.ticketId);
   }
 
   createThreadMessage(): void {
-    if (!this.newThreadMessage?.trim()) return;
+    if (!this.newThreadMessage?.trim()) {
+      this.errorMessage = 'Message cannot be empty.';
+      return;
+    }
+    this.errorMessage = '';
     
         
   console.log('Creating thread with message:', this.newThreadMessage);
@@ -46,6 +59,7 @@ export class TicketThreadModal implements OnInit {
       },
       error: (err) => {
         console.error('Error creating thread:', err);
+        this.errorMessage = 'Failed to send message. Please try again.';
       }
     });
 }
@@ -53,6 +67,19 @@ export class TicketThreadModal implements OnInit {
   onClose(): void {
     this.dialogRef.close();
   }
-  
 
+  closeTicket(): void {
+    this.ticketService.closeTicket(this.data.ticketId).subscribe({
+      next: () => {
+        this.dialogRef.close({ closed: true });
+      },
+      error: (err) => {
+        console.error('Error closing ticket:', err);
+        this.errorMessage = err.status === 409
+          ? 'This ticket is already resolved.'
+          : 'Failed to close ticket. Please try again.';
+      }
+    });
+  }
+  
 }

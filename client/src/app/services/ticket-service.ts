@@ -24,5 +24,9 @@ export class TicketService {
       return this.http.get<TicketResponse[]>(`${API_BASE_URL}/ticket/employee`);
     }
   }
+
+  closeTicket(ticketId: number): Observable<TicketResponse> {
+    return this.http.patch<TicketResponse>(`${API_BASE_URL}/ticket/${ticketId}/close`, {});
+  }
   
 }

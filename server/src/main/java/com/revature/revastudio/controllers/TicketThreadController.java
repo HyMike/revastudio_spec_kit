@@ -28,6 +28,7 @@ public class TicketThreadController {
         this.ticketThreadService = ticketThreadService;
     }
 
+    @PreAuthorize("hasAnyRole('CUSTOMER', 'EMPLOYEE')")
     @GetMapping("{ticketId}")
     public ResponseEntity<List<TicketThreadDTO>> getThreadMessages(@PathVariable Integer ticketId) {
 
@@ -35,7 +36,7 @@ public class TicketThreadController {
 
         return ResponseEntity.ok(threadMessages);
     }
-    @PreAuthorize("hasRole('CUSTOMER')") // Only employees can create thread messages
+    @PreAuthorize("hasAnyRole('CUSTOMER', 'EMPLOYEE')")
     @PostMapping("create")
     public ResponseEntity<TicketThreadDTO> createThread(@RequestBody TicketThreadRequestDTO ticketThreadDTO) {
 

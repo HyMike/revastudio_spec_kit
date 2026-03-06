@@ -1,6 +1,6 @@
 <div class="modal">
     <div class="modal-header">
-      <h2>Ticket thread</h2>
+      <h2>{{ data.ticketSubject }}</h2>
       <button type="button" class="close-btn" (click)="onClose()">Close</button>
     </div>
     <div class="modal-body">
@@ -14,12 +14,15 @@
                 <p class="thread-text">{{ msg.thread }}</p>
                 <span class="thread-date">{{ msg.createdAt }}</span>
               </li>
-            }ç
+            }
           </ul>
         }
       }
       
       <div class="thread-input-section">
+        @if (errorMessage) {
+          <p class="thread-error">{{ errorMessage }}</p>
+        }
         <textarea 
           [(ngModel)]="newThreadMessage" 
           placeholder="Type your message..."
@@ -32,6 +35,14 @@
           [disabled]="!newThreadMessage?.trim()">
           Send Message
         </button>
+        @if (isEmployee && data.ticketStatus !== 'RESOLVED') {
+          <button
+            type="button"
+            class="close-ticket-btn"
+            (click)="closeTicket()">
+            Close Ticket
+          </button>
+        }
       </div>
     </div>
   </div>

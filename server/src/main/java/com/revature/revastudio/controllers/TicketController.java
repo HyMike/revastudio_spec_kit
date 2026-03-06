@@ -29,7 +29,7 @@ public class TicketController {
 
 
     @PostMapping("{ticketId}/thread")
-    public ResponseEntity<TicketThreadDTO> addThreadMessages(@RequestParam Integer ticketId, @RequestBody String thread){
+    public ResponseEntity<TicketThreadDTO> addThreadMessages(@PathVariable Integer ticketId, @RequestBody String thread){
          TicketThreadDTO ticketThreadDTO = this.ticketService.addThreadMessage(ticketId, thread);
          return ResponseEntity.ok(ticketThreadDTO);
     }
@@ -49,9 +49,14 @@ public class TicketController {
         UUID userId = retrieveUser.getUser();
         List<TicketResponseDTO> allTickets = this.ticketService.getTicketsByEmployee(userId);
         return ResponseEntity.ok(allTickets);
-        //implement tickets for employee too.
+    }
 
-
+    @PreAuthorize("hasRole('EMPLOYEE')")
+    @PatchMapping("{ticketId}/close")
+    public ResponseEntity<TicketResponseDTO> closeTicket(@PathVariable Integer ticketId) {
+        UUID userId = retrieveUser.getUser();
+        TicketResponseDTO result = this.ticketService.closeTicket(ticketId, userId);
+        return ResponseEntity.ok(result);
     }
 }
 
