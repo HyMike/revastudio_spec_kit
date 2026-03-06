@@ -32,6 +32,10 @@ export class AuthService {
     this.jwtStorage.clearToken();
   }
 
+  getDashboardRoute(): string {
+    return this.getRole() === 'EMPLOYEE' ? '/employee/dashboard' : '/dashboard';
+  }
+
 
   getRole(): Role | null {
     const token = this.jwtStorage.getToken();

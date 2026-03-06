@@ -1,41 +1,105 @@
 <div class="dashboard">
-  <div class="card-header">
-
-    <h1>My Purchased Tracks</h1>
+  <div class="dashboard-card">
+    <div class="card-header">
+    <h1>{{ isEmployee ? 'My Sales Dashboard' : 'My Purchased Tracks' }}</h1>
       <div class="card-actions">
-        <button (click)="logout()">logout</button>
-        <button (click)="createTicket()">create ticket</button>
+        <button class="btn-logout" (click)="logout()">logout</button>
+        @if (!isEmployee) {
+          <button class="btn-create-ticket" (click)="createTicket()">create ticket</button>
+        }
       </div>
     </div>
 
-   
-    @if (allTracks$ | async; as tracks) {
-      @if (tracks.length > 0) {
-        <table>
-          <thead>
-            <tr>
-              <th>Track</th>
-              <th>Artist</th>
-              <th>Album</th>
-            </tr>
-          </thead>
-          <tbody>
-            @for (track of tracks; track $index) {
-              <tr>
-                <td>{{ track.track }}</td>
-                <td>{{ track.artist }}</td>
-                <td>{{ track.albums }}</td>
-              </tr>
-            }
-          </tbody>
-        </table>
+    @if (isEmployee) {
+      @if (employeeMetrics$ | async; as metrics) {
+        <div class="metrics-grid">
+          <div class="metric-card">
+            <span class="metric-label">Total Sales</span>
+            <strong class="metric-value">{{ metrics.summary.totalSalesCount }}</strong>
+          </div>
+          <div class="metric-card">
+            <span class="metric-label">Total Revenue</span>
+            <strong class="metric-value">{{ metrics.summary.totalRevenue | currency }}</strong>
+          </div>
+        </div>
+
+        <section class="dashboard-section">
+          <h2>Customers Assisted</h2>
+          @if (metrics.customers.length > 0) {
+            <ul class="customer-list">
+              @for (customer of metrics.customers; track customer.customerId) {
+                <li>
+                  <span>{{ customer.customerName }}</span>
+                  <span>{{ customer.totalSales }} sale(s)</span>
+                </li>
+              }
+            </ul>
+          } @else {
+            <p class="empty-message">No customers are associated with your sales yet.</p>
+          }
+        </section>
+
+        <section class="dashboard-section">
+          <h2>Sales Details</h2>
+          @if (metrics.sales.length > 0) {
+            <table>
+              <thead>
+                <tr>
+                  <th>Invoice</th>
+                  <th>Date</th>
+                  <th>Customer</th>
+                  <th>Track</th>
+                  <th>Billed</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (sale of metrics.sales; track sale.invoiceId + '-' + sale.trackName) {
+                  <tr>
+                    <td>#{{ sale.invoiceId }}</td>
+                    <td>{{ sale.invoiceDate }}</td>
+                    <td>{{ sale.customerName }}</td>
+                    <td>{{ sale.trackName }}</td>
+                    <td>{{ sale.billedAmount | currency }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          } @else {
+            <p class="empty-message">No sales details are available yet.</p>
+          }
+        </section>
       } @else {
-        <p class="empty-message">Please purchase tracks to view them here.</p>
+        <p class="loading-message">Loading sales metrics...</p>
       }
     } @else {
-      <p class="loading-message">Loading...</p>
+      @if (allTracks$ | async; as tracks) {
+        @if (tracks.length > 0) {
+          <table>
+            <thead>
+              <tr>
+                <th>Track</th>
+                <th>Artist</th>
+                <th>Album</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (track of tracks; track $index) {
+                <tr>
+                  <td>{{ track.track }}</td>
+                  <td>{{ track.artist }}</td>
+                  <td>{{ track.albums }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        } @else {
+          <p class="empty-message">Please purchase tracks to view them here.</p>
+        }
+      } @else {
+        <p class="loading-message">Loading...</p>
+      }
     }
-  <!-- </div> -->
+  </div>
 
   @if(showCreateTicketModal) {
     <div class="modal-backdrop" (click)="closeTicketModal()"></div>

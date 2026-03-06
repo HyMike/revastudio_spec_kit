@@ -1,26 +1,34 @@
-import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CustomerService } from '../../services/customer-service';
 import { PurchasedTracks } from '../../interfaces/tracks';
-import { AsyncPipe } from '@angular/common';
+import { AsyncPipe, CurrencyPipe } from '@angular/common';
 import { AuthService } from '../../services/auth-service';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { catchError, exhaustMap, Observable, of, Subject, tap } from 'rxjs';
+import { EmployeeMetricsService } from '../../services/employee-metrics.service';
+import { Role } from '../../type/role';
+import { EmployeeSalesMetrics } from '../../interfaces/employee-metrics';
 
 @Component({
   selector: 'app-dashboard',
-  imports: [AsyncPipe, FormsModule],
+  imports: [AsyncPipe, FormsModule, CurrencyPipe],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
 })
 export class Dashboard {
   customerService = inject(CustomerService);
+  employeeMetricsService = inject(EmployeeMetricsService);
   authService = inject(AuthService);
   router = inject(Router);
-  // private cdr = inject(ChangeDetectorRef);
 
   showCreateTicketModal = false;
-  allTracks$ = this.customerService.getAllTracks();
+  role: Role | null = this.authService.getRole();
+  isEmployee = this.role === 'EMPLOYEE';
+  allTracks$ = this.isEmployee ? of([] as PurchasedTracks[]) : this.customerService.getAllTracks();
+  employeeMetrics$ = this.isEmployee
+    ? this.employeeMetricsService.getSalesMetrics()
+    : of(null as EmployeeSalesMetrics | null);
   ticketSubject: string = "";
   ticketBody: string = "";
 
@@ -30,10 +38,12 @@ export class Dashboard {
   }
 
   createTicket(): void {
-    this.showCreateTicketModal = true;
-
-    // to pop up the modal.
+    if (this.isEmployee) {
+      return;
     }
+
+    this.showCreateTicketModal = true;
+  }
 
   private submitTrigger$ = new Subject<{subject: string, body: string }>();
 
@@ -52,25 +62,10 @@ export class Dashboard {
   )
 
   onSubmitTicket(): void {
-
     this.submitTrigger$.next({
       subject: this.ticketSubject, 
       body: this.ticketBody
     })
-    // the detectChange() approach with changeDetectorRef
-    // this.customerService.submitTicket({subject: this.ticketSubject, body: this.ticketBody})
-    // .subscribe({
-    //   next: () => {
-    //     this.closeTicketModal();
-    //     this.cdr.detectChanges();
-    //  // need to implement feature for refreshing the tickets. 
-    //  // use pipe(startWith(undefined), switchMap() => )
-    //   },
-    //   error: (err) => { 
-    //     console.log(err);
-    //   }
-    // })
-
   }
 
   closeTicketModal(): void {

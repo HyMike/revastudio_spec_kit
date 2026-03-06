@@ -110,3 +110,12 @@ modules.xml
 application.properties
 application-rds.properties
 # End of https://www.toptal.com/developers/gitignore/api/intellij+iml,visualstudiocode
+
+### Gradle build outputs ###
+.gradle/
+server/build/
+
+### Node / Angular ###
+client/node_modules/
+client/dist/
+client/.angular/

@@ -1,6 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatDialog } from '@angular/material/dialog';
+import { of } from 'rxjs';
 
 import { Ticket } from './ticket';
+import { TicketService } from '../../services/ticket-service';
 
 describe('Ticket', () => {
   let component: Ticket;
@@ -8,7 +11,21 @@ describe('Ticket', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [Ticket]
+      imports: [Ticket],
+      providers: [
+        {
+          provide: TicketService,
+          useValue: {
+            getAllTickets: () => of([]),
+          },
+        },
+        {
+          provide: MatDialog,
+          useValue: {
+            open: () => {},
+          },
+        },
+      ],
     })
     .compileComponents();
 

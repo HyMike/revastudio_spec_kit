@@ -1,11 +1,11 @@
 import { Component, signal } from '@angular/core';
 import { AuthService } from '../../services/auth-service';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-login-page',
-  imports: [RouterLink, FormsModule],
+  imports: [FormsModule],
   templateUrl: './login-page.html',
   styleUrl: './login-page.css',
 })
@@ -32,7 +32,7 @@ export class LoginPage {
     this.authService.login(this.username, this.password).subscribe({
       next: () => {
         this.failedLoginMessage.set("");
-        this.router.navigate(["/dashboard"]);
+        this.router.navigate([this.authService.getDashboardRoute()]);
       },
       error: (err) => {
         console.error("login error", err);
