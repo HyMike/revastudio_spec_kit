@@ -4,12 +4,15 @@ import com.revature.revastudio.dto.TicketResponseDTO;
 import com.revature.revastudio.dto.TicketThreadDTO;
 import com.revature.revastudio.entity.Ticket;
 import com.revature.revastudio.entity.TicketThread;
+import com.revature.revastudio.enums.TicketStatus;
 import com.revature.revastudio.repositories.TicketRepository;
 import com.revature.revastudio.repositories.TicketThreadRepository;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.UUID;
 
 
@@ -62,6 +65,24 @@ public class TicketService {
 //
 //
 //    }
+
+    public TicketResponseDTO closeTicket(Integer ticketId, UUID employeeUserId) {
+        Ticket ticket = ticketRepository.findById(ticketId)
+                .orElseThrow(() -> new NoSuchElementException("Ticket not found: " + ticketId));
+
+        if (ticket.getEmployee() == null ||
+                !ticket.getEmployee().getUser().getId().equals(employeeUserId)) {
+            throw new AccessDeniedException("You are not assigned to this ticket.");
+        }
+
+        if (ticket.getStatus() == TicketStatus.RESOLVED) {
+            throw new IllegalStateException("Ticket is already resolved.");
+        }
+
+        ticket.setStatus(TicketStatus.RESOLVED);
+        ticketRepository.save(ticket);
+        return toTicketResponseDTO(ticket);
+    }
 
     public TicketThreadDTO addThreadMessage(Integer ticketId, String thread) {
 

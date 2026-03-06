@@ -3,11 +3,11 @@
 
   @if (allTickets | async; as tickets) {
     @if (tickets.length === 0) {
-      <p class="ticket-empty">No tickets yet.</p>
+      <p class="ticket-empty">No tickets assigned.</p>
     } @else {
       <div class="ticket-list">
         @for (ticket of tickets; track ticket.ticketId) {
-          <div class="ticket-card" (click) ="openThread(ticket.ticketId)">
+          <div class="ticket-card" (click)="openThread(ticket)">
             <h2 class="ticket-card-subject">{{ ticket.subject }}</h2>
             <div class="ticket-card-meta">
               <span class="ticket-status" [class]="'ticket-status--' + ticket.status.toLowerCase()">

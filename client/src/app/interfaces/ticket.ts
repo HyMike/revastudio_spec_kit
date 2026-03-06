@@ -1,5 +1,5 @@
 
-export type TicketStatus = "OPEN" | "IN_PROGRESS" | "CLOSED";
+export type TicketStatus = "OPEN" | "IN_PROGRESS" | "RESOLVED";
 
 export interface TicketResponse {
     ticketId: number; 
